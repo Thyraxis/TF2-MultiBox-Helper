@@ -37,3 +37,5 @@
 !duck - Toggle ducking & duck speed. Arguments: on/off or 1/0
 
 !mic - Custom alias switching by "!mic off" or "!mic on", and you can run it by "!mic run" and stop it by "!mic stop"
+
+!zoom - mouse2 ur pc and uh bsod!1 Jk it just toggles zoom with +attack2 and then -attack2
