@@ -35,3 +35,5 @@
 !spin - Toggle anti-aim. Arguments: on/off or 1/0
 
 !duck - Toggle ducking & duck speed. Arguments: on/off or 1/0
+
+!mic - Custom alias switching by "!mic off" or "!mic on", and you can run it by "!mic run" and stop it by "!mic stop"
