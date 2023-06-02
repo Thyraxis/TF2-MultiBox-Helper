@@ -477,7 +477,7 @@ callbacks.Register("Draw", "test", function ()
     
 end)
 
--- thyraxis's idea
+-- rejected shet
 local function duckspeedon(args)
     Respond("Lets get duckin")
     gui.SetValue("duck speed", 1);
