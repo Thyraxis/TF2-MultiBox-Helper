@@ -352,13 +352,6 @@ local function cspam(args)
     end
 end
 
--- Auto unzoom. Needs improvement. Took it from some random person in the telegram months ago.
-local function unzoom( cmd )
-    local player = entities.GetLocalPlayer( );
-      if (player == nil or not player:IsAlive()) then
-      return end
-     if (player:InCond( TFCond_Zoomed)) then cmd.buttons = cmd.buttons | IN_ATTACK2 end
-  end
 
 local function SwitchClass(args)
     local class = args[1];
@@ -485,56 +478,26 @@ callbacks.Register("Draw", "test", function ()
 end)
 
 -- thyraxis's idea
-local function ducktoggle(args)
-    local duck = args[1]
-
-    if duck == nil then
-        Respond("Usage: " .. triggerSymbol .. "duck on/off");
-        return;
-    end
-
-    if duck == "on" then
-        duck = 1;
-        client.Command("+duck", true);
-    elseif duck == "1" then
-        duck = 1;
-        client.Command("+duck", true);
-    end
+local function duckspeedon(args)
+    Respond("Lets get duckin")
+    gui.SetValue("duck speed", 1);
+    client.Command("+duck", true);
+end
     
-    if duck == "off" then
-        duck = 0;
-        client.Command("-duck", true);
-    elseif duck == "0" then
-        duck = 0;
-        client.Command("-duck", true);
-    end
-
-    gui.SetValue("duck speed", duck);
-    Respond("Ducking is now " .. duck)
+local function duckspeedoff(args)
+    Respond("Alright no more duckin :sob:")
+    gui.SetValue("duck speed", 0);
+    client.Command("-duck", true);
 end
 
-local function spintoggle(args)
-    local spin = args[1]
+local function turnonspin(args)
+    Respond("Lets get spining boys!")
+    gui.SetValue("Anti aim", 1);
+end
 
-    if spin == nil then
-        Respond("Usage: " .. triggerSymbol .. "spin on/off");
-        return;
-    end
-
-    if spin == "on" then
-        spin = 1;
-    elseif spin == "1" then
-        spin = 1;
-    end
-    
-    if spin == "off" then
-        spin = 0;
-    elseif spin == "0" then
-        spin = 0;
-    end
-
-    gui.SetValue("Anti aim", spin);
-    Respond("Anti-Aim is now " .. spin)
+local function turnoffspin(args)
+    Respond("No more spin boys :(")
+    gui.SetValue("Anti aim", 0);
 end
 
 local madealiasmic = false
@@ -596,6 +559,11 @@ local function amic(args)
             Respond("Alias: Stopped")
         end
     end
+end
+
+local function zoomtoggle(args)
+    client.Command("+attack2;wait 20;-attack2", true);
+    Respond("m2'd")
 end
 -- ============= End of commands' section ============= --
 
@@ -697,16 +665,20 @@ local function Initialize()
    -- callbacks.Register("FireGameEvent", MicSpam);
 
     --Auto unzoom
-    callbacks.Register("CreateMove", "unzoom", unzoom)
+    --callbacks.Register("CreateMove", "unzoom", unzoom)
 
-        -- [[ Stuff added by thyraxis ]] --
+    -- [[ Stuff added by thyraxis ]] --
 
     -- Duck Speed
-    RegisterCommand("duck", ducktoggle)
+    RegisterCommand("duckon", duckspeedon)
+    RegisterCommand("duckoff", duckspeedoff)
     -- Spin
-    RegisterCommand("spin", spintoggle)
+    RegisterCommand("spinon", turnonspin)
+    RegisterCommand("spinoff", turnoffspin)
     -- Mic
     RegisterCommand("mic", amic)
+    -- zoom
+    RegisterCommand("zoom", zoomtoggle)
 end
 
 Initialize();
