@@ -436,29 +436,29 @@ local function TauntByName(args)
     client.Command("taunt_by_name " .. fullTauntName, true);
 end
 
--- Reworked Mic Spam, added by Dr_Coomer - Doctor_Coomer#4425
-local function Speak(args)
-    Respond("Listen to me!")
-    PlusVoiceRecord = true;
-    client.Command("+voicerecord", true)
-end
+-- Reworked Mic Spam, added by Dr_Coomer - Doctor_Coomer#4425 Shit
+--local function Speak(args)
+--    Respond("Listen to me!")
+--    PlusVoiceRecord = true;
+--    client.Command("+voicerecord", true)
+--end
 
-local function Shutup(args)
-    Respond("I'll shut up now...")
-    PlusVoiceRecord = false;
-    client.Command("-voicerecord", true)
-end
+--local function Shutup(args)
+ --   Respond("I'll shut up now...")
+  --  PlusVoiceRecord = false;
+  --  client.Command("-voicerecord", true)
+--end
 
-local function MicSpam(event)
+--local function MicSpam(event)
 
-    if event:GetName() ~= playerJoinEventName then
-        return;
-    end
+ --   if event:GetName() ~= playerJoinEventName then
+ --       return;
+ --   end
 
-    if PlusVoiceRecord == true then
-        client.Command("+voicerecord", true);
-    end
-end
+  --  if PlusVoiceRecord == true then
+     --   client.Command("+voicerecord", true);
+ --   end
+--end
 
 -- StoreMilk additions
 
@@ -537,6 +537,66 @@ local function spintoggle(args)
     Respond("Anti-Aim is now " .. spin)
 end
 
+local madealiasmic = false
+local onoroffaliasmic = false
+local alreadyrunningmic = false
+local function amic(args)
+    local amictr = args[1];
+    if amictr == nil then
+        Respond("Alias: run (runs the alias), stop (stops the alias from running), on (sets alias to on), off (sets alias to off)");
+        return;
+    end
+
+    if amictr == "run" then
+        if madealiasmic == true then
+           if alreadyrunningmic == false then
+                client.Command("v", true);
+                Respond("Alias: Running")
+                alreadyrunningmic = true
+           elseif alreadyrunningmic == true then
+                Respond("Alias: Already running")
+           end
+        end
+        if madealiasmic == false then
+            Respond("Alias: mic wasnt created please create one by doing '!mic on' and it will create one it only changes alias")
+        end
+    end
+    if amictr == "on" then
+        if onoroffaliasmic == true then
+            Respond("Alias: Already on")
+        end
+        if onoroffaliasmic == false then
+            client.Command('alias v "+voicerecord;wait 100;v"', true);
+            madealiasmic = true
+            onoroffaliasmic = true
+            Respond("Alias: Set from off to on!")
+        end
+    end
+    if amictr == "off" then
+        if onoroffaliasmic == false then
+            Respond("Alias: Already off")
+        end
+        if onoroffaliasmic == true then
+            client.Command('alias v "-voicerecord;wait 100;v"', true);
+            madealiasmic = true
+            onoroffaliasmic = false
+            Respond("Alias: Set from on to off!")
+        end
+    end
+    if amictr == "stop" then
+        if madealiasmic == false then
+            Respond("Alias: mic was not found")
+        end
+        if madealiasmic == true then
+            client.Command('alias v "-voicerecord"', true);
+            client.Command("-voicerecord", true);
+            madealiasmic = false
+            onoroffaliasmic = false
+            alreadyrunningmic = false
+            Respond("Alias: Stopped")
+        end
+    end
+end
 -- ============= End of commands' section ============= --
 
 -- This method is an inventory enumerator. Used to search for mediguns in the inventory.
@@ -632,9 +692,9 @@ local function Initialize()
     RegisterCommand("cspam", cspam);
 
     -- Mic Spam toggle
-    RegisterCommand("speak", Speak);
-	RegisterCommand("shutup", Shutup);
-    callbacks.Register("FireGameEvent", MicSpam);
+   -- RegisterCommand("speak", Speak);
+--	RegisterCommand("shutup", Shutup);
+   -- callbacks.Register("FireGameEvent", MicSpam);
 
     --Auto unzoom
     callbacks.Register("CreateMove", "unzoom", unzoom)
@@ -645,6 +705,8 @@ local function Initialize()
     RegisterCommand("duck", ducktoggle)
     -- Spin
     RegisterCommand("spin", spintoggle)
+    -- Mic
+    RegisterCommand("mic", amic)
 end
 
 Initialize();
