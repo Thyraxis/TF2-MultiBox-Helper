@@ -39,3 +39,5 @@
 !mic - Custom alias switching by "!mic off" or "!mic on", and you can run it by "!mic run" and stop it by "!mic stop"
 
 !zoom - mouse2 ur pc and uh bsod!1 Jk it just toggles zoom with +attack2 and then -attack2
+
+!zd - Automatically zoom in when a player is close enough, regardless if they are through a wall or not. Arguments: on/off and a number. Example of valid commands: "!zd on 600" "!zd off"
