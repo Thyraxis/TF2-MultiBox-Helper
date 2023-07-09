@@ -14,6 +14,9 @@ local PlusVoiceRecord = true;
 -- Keep the table of command arguments outside of all functions, so we can just jack this when ever we need anymore than a single argument.
 local commandArgs;
 
+-- WHO THE FUCK CARES ABOUT THIS SHIT 
+local ZoomDistanceCheck = true;
+
 -- Constants
 local k_eTFPartyChatType_MemberChat = 1;
 local steamid64Ident = 76561197960265728;
@@ -352,7 +355,175 @@ local function cspam(args)
     end
 end
 
+-- MORE PASTING!!!! im just updating this old ass script to coomer's shit 
+-- also if it gives out an error i will not fix it bc im not good with lua :skull:
+-- update: its a sphere not cube like cathook :sob:
+local IsInRange = false;
+local closestplayer
 
+local CurrentClosestX
+local CurrentClosestY
+
+local Distance = 1200; --best + from cathook (i only took the number)
+
+local function zoomdistance(args)
+    local zoomdistance = args[1]
+    local zoomdistanceDistance = tonumber(table.remove(commandArgs, 2)) -- when !zd was triggerd it wil warn :skull: SO FUCKING RETARDED
+
+    if zoomdistance == nil then
+        Respond("Example: " .. triggerSymbol .. "zd on 650")
+        return
+    end
+
+    zoomdistance = string.lower(args[1])
+
+    if zoomdistance == "1" then
+        ZoomDistanceCheck = true
+    elseif zoomdistance == "on" then
+        ZoomDistanceCheck = true
+    end
+
+    if zoomdistance == "0" then
+        ZoomDistanceCheck = false
+    elseif zoomdistance == "off" then
+        ZoomDistanceCheck = false
+    end
+
+    if zoomdistanceDistance == nil then
+        return;
+    end
+
+    Distance = zoomdistanceDistance
+
+end
+
+function DistanceFrom(x1, y1, x2, y2) --Maths :nerd:
+    return math.sqrt((x2 - x1) ^ 2 + (y2 - y1) ^ 2)
+end
+
+local function GetPlayerLocations()
+
+    local localp = entities.GetLocalPlayer()
+    local players = entities.FindByClass("CTFPlayer")
+
+    if localp == nil then
+        return;
+    end
+
+    if ZoomDistanceCheck == false then
+        return;
+    end
+
+    local localpOrigin = localp:GetAbsOrigin();
+    local localX = localpOrigin.x
+    local localY = localpOrigin.y
+
+    for i, player in pairs(players) do
+
+        --Skip players we don't want to enumerate
+        if not player:IsAlive() then
+            goto Ignore
+        end
+
+        if player:IsDormant() then
+            goto Ignore
+        end
+
+        if player == localp then
+            goto Ignore
+        end
+        if player:GetTeamNumber() == localp:GetTeamNumber() then
+            goto Ignore
+        end
+
+        --Get the current enumerated player's vector2 from their vector3
+        local Vector3Players = player:GetAbsOrigin()
+        local X = Vector3Players.x
+        local Y = Vector3Players.y
+
+        localX = localpOrigin.x
+        localY = localpOrigin.y
+
+        if IsInRange == false then
+            if DistanceFrom(localX, localY, X, Y) < Distance then --If we get someone that is in range then we save who they are and their vector2
+                IsInRange = true;
+
+                closestplayer = player;
+
+                CurrentClosestX = closestplayer:GetAbsOrigin().x
+                CurrentClosestY = closestplayer:GetAbsOrigin().y
+            end
+        end
+        ::Ignore::
+    end
+
+    if IsInRange == true then
+
+        CurrentClosestX = closestplayer:GetAbsOrigin().x
+        CurrentClosestY = closestplayer:GetAbsOrigin().y
+
+        if localp == nil or not localp:IsAlive() then
+            IsInRange = false;
+            return;
+        end
+
+        if closestplayer == nil then
+            error("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nthis might never get hit\n\n\n\n\n\n\n\n\n\n\n")
+            IsInRange = false;
+            return;
+        end
+
+        if closestplayer:IsDormant() then
+            IsInRange = false;
+            return;
+        end
+
+        if not closestplayer:IsAlive() then --Check if the current closest player has died
+            IsInRange = false;
+            return;
+        end
+
+        if DistanceFrom(localX, localY, CurrentClosestX, CurrentClosestY) > Distance then --Check if they have left our range
+            IsInRange = false;
+            return;
+        end
+    end
+end
+--guess what guys? more pasting!
+local stopScope = false;
+local countUp = 0;
+local function AutoUnZoom(cmd)
+    local localp = entities.GetLocalPlayer();
+
+    if (localp == nil or not localp:IsAlive()) then
+        return;
+    end
+
+    if IsInRange == true then
+        if not (localp:InCond( TFCond_Zoomed)) then 
+            cmd.buttons = cmd.buttons | IN_ATTACK2 
+        end
+    elseif IsInRange == false then
+        if stopScope == false then
+            if (localp:InCond( TFCond_Zoomed)) then 
+                cmd.buttons = cmd.buttons | IN_ATTACK2 
+                stopScope = true;
+            end
+        end
+    end
+
+
+    --Wait logic
+    if stopScope == true then
+        countUp = countUp + 1;
+        if countUp == 66 then 
+            countUp = 0;
+            stopScope = false;
+        end
+    end
+
+end
+-- im not adding auto vote kick in this. we already use another lua also https://bro.who-tf.ru/like_bro_who_are_you_dude_nn_stranger_anyway_heres_my_random_string/4InA92tj coomer pasting????? (upload.system link)
 local function SwitchClass(args)
     local class = args[1];
 
@@ -477,27 +648,86 @@ callbacks.Register("Draw", "test", function ()
     
 end)
 
--- rejected shet
-local function duckspeedon(args)
-    Respond("Lets get duckin")
-    gui.SetValue("duck speed", 1);
-    client.Command("+duck", true);
-end
+-- its retarded
+--local function duckspeedon(args)
+--    Respond("Lets get duckin")
+--    gui.SetValue("duck speed", 1);
+--    client.Command("+duck", true);
+--end
     
-local function duckspeedoff(args)
-    Respond("Alright no more duckin :sob:")
-    gui.SetValue("duck speed", 0);
-    client.Command("-duck", true);
+--local function duckspeedoff(args)
+--    Respond("Alright no more duckin :sob:")
+--    gui.SetValue("duck speed", 0);
+--    client.Command("-duck", true);
+--end
+
+
+local isducked = false
+local function ducktoggle(args)
+    local duk = args[1]
+
+    if duk == nil then
+        Respond("Usage: on, off");
+        return;
+    end
+
+    if duk == "on" then
+        if isducked == false then
+            Respond("Lets get duckin")
+            gui.SetValue("duck speed", 1);
+            client.Command("+duck", true);
+            isducked = true
+        elseif isducked == true then
+            Respond("Already duckin my boy")
+        end
+    end
+    if duk == "off" then
+        if isducked == true then
+            Respond("Alright no more duckin :sob:")
+            gui.SetValue("duck speed", 0);
+            client.Command("-duck", true);
+        elseif isducked == false then
+            Respond("i am already not ducking")
+        end
+    end
 end
 
-local function turnonspin(args)
-    Respond("Lets get spining boys!")
-    gui.SetValue("Anti aim", 1);
-end
+--local function turnonspin(args)
+--    Respond("Lets get spining boys!")
+--    gui.SetValue("Anti aim", 1);
+--end
 
-local function turnoffspin(args)
-    Respond("No more spin boys :(")
-    gui.SetValue("Anti aim", 0);
+--local function turnoffspin(args)
+--    Respond("No more spin boys :(")
+--    gui.SetValue("Anti aim", 0);
+--end
+
+local spinnin = false
+local function spintoggle(args)
+    local spincom = args[1]
+
+    if spincom == nil then
+        Respond("Usage: on, off");
+        return;
+    end
+
+    if spincom == "on" then
+        if spinnin == false then
+            Respond("Lets spin boys")
+            gui.SetValue("anti aim", 1);
+            spinnin = true
+        elseif spinnin == true then
+            Respond("Already Spinning")
+        end
+    end
+    if spincom == "off" then
+        if spinnin == true then
+            Respond("Alright no more spin")
+            gui.SetValue("anti aim", 0);
+        elseif spinnin == false then
+            Respond("i am already not spinning")
+        end
+    end
 end
 
 local madealiasmic = false
@@ -505,6 +735,7 @@ local onoroffaliasmic = false
 local alreadyrunningmic = false
 local function amic(args)
     local amictr = args[1];
+
     if amictr == nil then
         Respond("Alias: run (runs the alias), stop (stops the alias from running), on (sets alias to on), off (sets alias to off)");
         return;
@@ -565,9 +796,22 @@ local function zoomtoggle(args)
     client.Command("+attack2;wait 20;-attack2", true);
     Respond("m2'd")
 end
+
+-- i was about to add navbot :skull:
 -- ============= End of commands' section ============= --
 
 -- This method is an inventory enumerator. Used to search for mediguns in the inventory.
+-- guys its more pasting
+local function newmap_event(event) --reset what ever data we want to reset when we switch maps
+    if (event:GetName() == "game_newmap") then
+        timer = 0 --unused shit
+        IsInRange = false;
+        CurrentClosestX = nil
+        CurrentClosestY = nil
+        closestplayer = nil;
+    end
+end
+
 local function EnumerateInventory(item)
     -- Broken for now. Will fix later.
 
@@ -579,6 +823,7 @@ local function EnumerateInventory(item)
         --foundMediguns.default = item:GetItemId();
         local id = item:GetItemId();
     end
+    
 
     if Contains(medigunTypedefs.quickfix, itemDefIndex) then
         -- We found a quickfix.
@@ -663,15 +908,21 @@ local function Initialize()
    -- RegisterCommand("speak", Speak);
 --	RegisterCommand("shutup", Shutup);
    -- callbacks.Register("FireGameEvent", MicSpam);
+    -- zoom distance
+    RegisterCommand("zd", zoomdistance) --shorten this saved 2 bytes
+    callbacks.Register("CreateMove", "GetPlayerLocations", GetPlayerLocations)
 
     --Auto unzoom
-    --callbacks.Register("CreateMove", "unzoom", unzoom)
+    callbacks.Register("CreateMove", "unzoom", AutoUnZoom)
 
+    -- anyone would help me to stop thinking about becoming an idiot
+    callbacks.Register("FireGameEvent", "newmap_event", newmap_event)
     -- [[ Stuff added by thyraxis ]] --
 
     -- Duck Speed
-    RegisterCommand("duckon", duckspeedon)
-    RegisterCommand("duckoff", duckspeedoff)
+    --RegisterCommand("duckon", duckspeedon)
+    --RegisterCommand("duckoff", duckspeedoff)
+    RegisterCommand("duck", ducktoggle)
     -- Spin
     RegisterCommand("spinon", turnonspin)
     RegisterCommand("spinoff", turnoffspin)
